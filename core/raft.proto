@@ -1,0 +1,56 @@
+package raft.proto;
+option cc_generic_services = true;
+
+enum EntryType {
+  NEW_LEADER = 1;
+  LOG_ENTRY = 2;
+}
+
+message LogEntry {
+  required EntryType type = 1;
+  required uint64 index = 2;
+  required uint64 term = 3;
+  optional bytes body = 4;
+}
+
+message RequestVoteRequest {
+  required uint64 term = 1;
+  required int32 candidateId = 2;
+  required uint64 logindex = 3;
+  required uint64 logterm = 4;
+}
+
+message RequestVoteReply {
+  required uint64 term = 1;
+  required bool granted= 2;
+}
+
+message AppendEntryRequest {
+  required uint64 term = 1;
+  required int32 leaderid = 2;
+  required uint64 logindex = 3;
+  required uint64 logterm = 4;
+  required uint64 commitindex = 5;
+  repeated LogEntry entries = 6;
+}
+
+message AppendEntryReply {
+  required int32 serverid = 1;
+  required uint64 term = 2;
+  required uint64 logindex = 3;
+  required bool success = 4;
+}
+
+message QueryLeaderRequest {
+
+}
+
+message QueryLeaderReply {
+  required int32 leaderid = 1;
+}
+
+service RaftService {
+  rpc RequestVote(RequestVoteRequest) returns (RequestVoteReply);
+  rpc AppendEntry(AppendEntryRequest) returns (AppendEntryReply);
+  rpc QueryLeader(QueryLeaderRequest) returns (QueryLeaderReply);
+}
